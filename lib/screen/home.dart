@@ -23,15 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
           itemCount : users.length,
           itemBuilder: (context,index){
             final user = users[index];
-            final name = user['name']['first'];
-            final email = user['email'];
-            final imageUrl = user['picture']['thumbnail'];
+            final name = users[index].toString();
+            // final email = user['email'];
+            // final imageUrl = user['']["sites"]['chargers']['imageUrl'];
         return ListTile(
           leading: ClipRRect(
             borderRadius:BorderRadius.circular(100),
-            child: Image.network(imageUrl),
+            // child: Image.network(imageUrl),
           ),
-          title: Text(email),
+          // title: Text(email),
           subtitle: Text(name),
         );
       }),
@@ -42,20 +42,25 @@ class _HomeScreenState extends State<HomeScreen> {
   void fetchUsers() async{
     print('FetchUsers Called');
 
-    // var headers = {
-    //   'Content-Type': 'application/json',
-    //   'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJpc3MiOiJHcmlkc2NhcGUiLCJpYXQiOjE2OTA4NzU2MTgsImVtYWlsIjoidGVzdF9yYWh1bDRAeW9wbWFpbC5jb20iLCJjdXN0b21lciI6MX0.89EJmwdHChxx_uAPtBwPtblJ5HMY0KdltI7Z9GRPsIs'
-    // };
-    //
-    // var request = http.Request('POST', Uri.parse('https://demo.grid-scape.com/m-interface/v2/chargers'));
-    // final res = request.body = json.encode({
-    //   "chargerVisibility": "ALL",
-    //   "hierarchyLevel": "UPTO_CONNECTOR"
-    // });
-    // request.headers.addAll(headers);
-    //
-    // http.StreamedResponse response = await request.send();
-    //
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJpc3MiOiJHcmlkc2NhcGUiLCJpYXQiOjE2OTA4NzU2MTgsImVtYWlsIjoidGVzdF9yYWh1bDRAeW9wbWFpbC5jb20iLCJjdXN0b21lciI6MX0.89EJmwdHChxx_uAPtBwPtblJ5HMY0KdltI7Z9GRPsIs'
+    };
+
+    var request = http.Request('POST', Uri.parse('https://demo.grid-scape.com/m-interface/v2/chargers'));
+    request.body = json.encode({
+      "chargerVisibility": "ALL",
+      "hierarchyLevel": "UPTO_CONNECTOR"
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    var res = await response.stream.bytesToString();
+    print('Printing from response res variable ${jsonDecode(res)["data"]["sites"]}');
+    var result = jsonDecode(res);
+
+
     // if (response.statusCode == 200) {
     //   print(await response.stream.bytesToString());
     // }
@@ -74,9 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
     //   users = json['results'];
     // });
 
-    // setState(() {
-    //   users = response;
-    // });
+
+    setState(() {
+      users = result["data"]["sites"];
+    });
+
+    // users.add(result["data"]["sites"]);
     print('fetchUsers completed');
   }
 }
